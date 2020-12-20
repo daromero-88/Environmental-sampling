@@ -5,9 +5,9 @@
 ### unsuitable environmnents or different environemntal regions. 
 
 #
+#' @param pts matrix with longitud, latitude as columns in that particular order 
 #' @param stck raster stack containing the environmental variables of interest
-#'   cropped to the study area, it can also work as the background in function
-#'   e_space_cat_back.
+#'   cropped to the study area
 #' @param ctgr categorized raster, it could be a binary or multiple-threshold map
 #'   that assigns ascending values of suitability to each pixel.
 #' @param bck raster stack with environmental variables clipped to the background
@@ -20,6 +20,8 @@
 #' @return
 #' \code{e_space} returns a dataframe with the extracted environmental values
 #' that can be used for other kinds of visualizations.
+#' \code {e_space_bck} returns a dataframe with the 
+#' 
 #' \code{e_space_cat} returns a dataframe necessary for applying the environmental
 #' sampling (Hutchinson) functions.
 #' \code{e_space_cat_back} returns a dataframe that includes the background
