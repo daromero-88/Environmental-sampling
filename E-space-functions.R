@@ -1,11 +1,11 @@
-# Functions 'e_space', 'e_space_cat' and 'e_space_cat_back'
+# Functions 'e_space', 'e_space_back', 'e_space_cat' and 'e_space_cat_back'
 ### These three functions allow the user explore the environmental space of a particular region (e_space) and 
 ### the environmental space divided in different suitable categories as determined by the model outpus (e_space_cat).
 ### The last function allows the comparison of a particular environment to a background of the same area depicting
 ### unsuitable environmnents or different environemntal regions. 
 
 #
-#' @param pts matrix with longitud, latitude as columns in that particular order 
+#' @param pts matrix with two columns: longitud and latitude in that particular order 
 #' @param stck raster stack containing the environmental variables of interest
 #'   cropped to the study area
 #' @param ctgr categorized raster, it could be a binary or multiple-threshold map
@@ -20,28 +20,31 @@
 #' @return
 #' \code{e_space} returns a dataframe with the extracted environmental values
 #' that can be used for other kinds of visualizations.
-#' \code {e_space_bck} returns a dataframe with the 
-#' 
+#' \code {e_space_bck} returns a dataframe with a new column indicating the study area
+#' (>1) and the background (=1)
 #' \code{e_space_cat} returns a dataframe necessary for applying the environmental
 #' sampling (Hutchinson) functions.
 #' \code{e_space_cat_back} returns a dataframe that includes the background
 #' as a new category. 
 #' 
-#' @describeIn e_space transforms a raster stack of environmental variables into
+#' @describeIn e_space transforms a a matrix of longitude/latitude or a 
+#' raster stack of environmental variables into
 #' a dataframe that contains the geographic coordinates and environmental values
 #' as extracted from the raster file; it also displays the points into E-space and
 #' G-space.
 # CODE e_space ---------
 # Dependencies: maptools, wrld_simpl, raster
 #
-e_space <- function(stck, pflag = F, wrld_map = wrld_simpl){
-  # transform raster into referenced points and into a data frame
-  pts1 = data.frame(rasterToPoints(stck, fun = NULL))
-  # Plotting if TRUE
+e_space <- function(pts, stck, pflag = F, wrld_map = wrld_simpl){
+  if (missing(pts)){
+    # transform raster into referenced points and into a data frame
+    pts1 = data.frame(rasterToPoints(stck, fun = NULL))
+  }else{
+    pts1 = cbind (pts, extract (stck,pts[,1:2]))
+  }
   if(pflag){
     # transform values into spatial points to plot on map
     pts_sp = SpatialPointsDataFrame(pts1[,1:2], pts1, proj4string = crs(wrld_map))
-    # create function between two colors
     # E-space
     dev.new()
     # scatter plots of all the environmental combinations
@@ -51,6 +54,52 @@ e_space <- function(stck, pflag = F, wrld_map = wrld_simpl){
     # plot the points that cover the area of interest
     plot(pts_sp, col = 'grey', main = 'G-space') 
     # add the boundary of the area
+    plot(wrld_map, xlim = c(pts_sp@bbox[1,]), ylim = c(pts_sp@bbox[2,]), add = T)
+  }
+  return(pts1) # return dataframe 
+}
+#
+#' @describeIn e_space_back transforms a matrix of longitude/latitude or a 
+#' raster stack of environmental variables into
+#' a dataframe that contains the geographic coordinates and environmental values
+#' as extracted from the raster file; it also displays the points into G space and in 
+#' E-space overlapped with a selected background. 
+# CODE e_space_back ---------
+# Dependencies: maptools, wrld_simpl, raster
+
+e_space_back <- function(pts, stck, bck, pflag = F, wrld_map = wrld_simpl){
+  if (missing(pts)){
+    # transform raster into referenced points and into a data frame
+    pts1 = data.frame(rasterToPoints(stck, fun = NULL))
+    bck = data.frame(rasterToPoints(bck, fun = NULL))
+  }else{
+    pts1 = cbind (pts, extract (stck,pts[,1:2]))
+    bck = data.frame(rasterToPoints(bck, fun = NULL))
+  }
+  pts1$or = rep(2, nrow(pts1))
+  bck$or = rep (1, nrow(bck))
+  names(bck) = names(pts1)
+  def_df = rbind (bck,pts1)
+  
+  if(pflag){
+    ## E-space
+    dev.new()
+    # #scatter plots of all the environmental combinations
+    
+    pairs(def_df[,3:(ncol(def_df)-1)], lower.panel = NULL, main = 'E-space',
+          pch = c(1,3)[def_df[,ncol(def_df)]], cex = c(0.7, 0.3)[def_df[,ncol(def_df)]],
+          col = c('grey', 'black')[def_df[,ncol(def_df)]])
+    par(xpd = TRUE)
+    legend("bottomleft", fill=c('black', 'grey'), legend=c('Study points',"Background"))
+    
+    ##G-space
+    ##transform values into spatial points to plot on map
+    pts_sp = SpatialPointsDataFrame(pts1[,1:2], pts1, proj4string = crs(wrld_map))
+    
+    dev.new()
+    ## plot the points that cover the area of interest
+    plot(pts_sp, col = 'grey', main = 'G-space')
+    ## add the boundary of the area
     plot(wrld_map, xlim = c(pts_sp@bbox[1,]), ylim = c(pts_sp@bbox[2,]), add = T)
   }
   return(pts1) # return dataframe 
