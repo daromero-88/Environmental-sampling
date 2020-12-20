@@ -33,8 +33,8 @@ length(all_envs@layers)
 
 #Read data for example 3: POINTS TO ENVIRONMENTAL SAMPLING----------------
 
-ldb = read.csv ('./spp_ex1.csv')
-amr = readOGR ('./shape_amrs/Americas.shp')
+ldb = read.csv ('./env_samp_points/spp_ex1.csv')
+amr = readOGR ('./env_samp_points/shape_amrs/Americas.shp')
 
 
 #Read data for examples 1 and 2: MELIOIDOSIS SAMPLING--------------------

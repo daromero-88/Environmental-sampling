@@ -28,8 +28,7 @@
 # CODE hutchinson -----------
 # Dependencies: maptools, sp, gatepoints
 
-hutchinson = function (EtoG, data, calls, plyg, ntr, col.use = NULL){
-  
+hutchinson = function (EtoG, data, calls, plyg, ntr){
   # create object to save information about the transects created
   transects <- vector("list",length=ntr)
   if(EtoG==T){ # from E to G
