@@ -24,18 +24,26 @@ library(sp)
 # worldwide shapefile 
 data("wrld_simpl", package = "maptools")
 
-# Read data -----------------
+# Read data for all examples----------------------
+
+#' environemntal_variables: The set of environmental variables selected in the modeling process
+all_envs = stack(list.files('./environmental_variables', full.names = T))
+# number of layers
+length(all_envs@layers)
+
+#Read data for example 3: POINTS TO ENVIRONMENTAL SAMPLING----------------
+
+ldb = read.csv ('./spp_ex1.csv')
+amr = readOGR ('./shape_amrs/Americas.shp')
+
+
+#Read data for examples 1 and 2: MELIOIDOSIS SAMPLING--------------------
 
 #' categorized_models: models categorized using four thresholds as described in the main text
 #' Minimum training presence, E= 5%, E= 10%, and E= 20% 
 cat_models = stack(list.files('./categorized_models', full.names = T))
 # number of layers
 length(cat_models@layers)
-
-#' environemntal_variables: The set of environmental variables selected in the modeling process
-all_envs = stack(list.files('./environmental_variables', full.names = T))
-# number of layers
-length(all_envs@layers)
 
 #' uncertainty_models: Interquartile range of the bootstrap models using the selected parameters
 uncert_models = stack(list.files ('./uncertainty_models', full.names = T))
@@ -268,6 +276,59 @@ dim(uncer_check)
 write.csv(f2_tex1, './tex1_df1.csv', row.names = F)
 write.csv(uncer_check, './tex1_res.csv', row.names = F)
 
+
+#WORKED EXAMPLE 3: points to environmental sampling ------------------
+
+#creatinng main for Hutchinson-based sampling: 
+#data available in the corresponding sections 
+
+#environmental variables
+wrd_merra2 = crop (all_envs, amr)
+wrd_merra2 = mask (wrd_merra2, amr)
+
+#creating main dataframe displaying points in E
+rr = e_space(ldb[,3:4], wrd_merra2, pflag = T)
+
+#examining a stack of raster in E space 
+#new extent for example: 
+ee = extent(-100, -50, -50, 100)
+
+ex_stck = crop (wrd_merra2, ee)
+
+rr1 = e_space(stck = ex_stck, pflag = T)
+
+#examining points in E overlapped with a background
+rr2 = e_space_back(ldb[,3:4], ex_stck, wrd_merra2, pflag = T)
+
+
+#Hutchinson sampling: 
+#sampling scheme: 
+qq1 = hutchinson(EtoG = T, rr, c(3,4), amr, 2)
+qq2 = hutchinson(EtoG = T, rr, c(3,5), amr, 2)
+qq3 = hutchinson(EtoG = T, rr, c(4,5), amr, 2)
+
+#defining database with transects from different dimensions: 
+q_df = rbind (qq1, qq2, qq3)
+dim(q_df)
+
+#trimming database for final coordinates and uncertainty/raster evaluation: 
+ss = post_track(q_df, wrd_merra2[[1]], amr)
+dim(ss)
+
+#Manually trimming the database: 
+#eliminating duplicates
+q_df$dup = paste(q_df[,1], q_df[,2], sep= '_')
+q_df2 = q_df[!duplicated(q_df$dup),]
+dim(q_df2)
+q_df2$dup = NULL
+
+
+#Manually plotting individual results:
+plot (amr)
+points(q_df2[,1:2], pch = q_df2[,dim(q_df2)[2]], col= c(q_df2[,dim(q_df2)[2]]))
+nm_lg = paste('Transect', unique(q_df2[,dim(q_df2)[2]]))
+legend('bottomleft', legend = nm_lg, pch = unique(q_df2[,dim(q_df2)[2]]), 
+       col = c(unique(q_df2[,dim(q_df2)[2]])))
 
 #
 # Daniel Romero-Alvarez & Laura Jimenez, 2020
