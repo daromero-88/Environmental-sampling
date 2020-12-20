@@ -5,7 +5,9 @@
 
 #
 #' @param tracks dataframe with coordinates, categories, track class
-#' @param uncert_ras raster measuring variability. It can be replaced by any other raster, e.g., altitude. 
+#' @param raster_file raster file to explore points selected with hutchinson functions
+#' @param uncert_ras raster measuring variability. It can be replaced by any 
+#' other raster, e.g., altitude. 
 #' @param plyg polygon that delimits the geographical space of interest
 #' @param col.use vector of lenght two with the colors to be used in plots
 #' 
@@ -14,13 +16,47 @@
 #' environmental values per pixel, track number, uncertainty values.
 #' 
 #' @describeIn post_track depicts the points selected in either the
+#' environmental or geographical sampling overa raster surface.
+#' It allows trims the dataset for duplicates and allows to see whether the
+#' points occupy areas of interest in any raster file. 
+#' 
+# CODE post_track ---------
+# Dependencies: none
+
+post_track = function(tracks, raster_file, plyg){
+  # eliminating duplicates
+  tracks$dup = paste(tracks[,1], tracks[,2], sep= '_')
+  tracks = tracks[!duplicated(tracks$dup),]
+  tracks$dup = NULL
+  
+  # plotting points on top of the uncertainty map 
+  dev.new()
+  # plot uncertainty raster and shapefile with region of interest
+  plot (raster_file, main = 'Raster values', xlab = 'Latitude', ylab = 'Longitude')
+  plot (plyg, add = T)
+  # add points 1: 
+  points(tracks[,1:2],
+         pch = tracks[,dim(tracks)[2]], 
+         col= c(tracks[,dim(tracks)[2]], cex = 0.5))
+  tr.names = paste('Transect', unique(tracks[,dim(tracks)[2]]))
+  legend('bottomleft', legend = tr.names, pch = unique(tracks[,dim(tracks)[2]]), 
+         col = c(unique(tracks[,dim(tracks)[2]])))
+  
+  #adding uncertainty values 
+  unc_data = extract(raster_file, tracks[,1:2])
+  def_unc = cbind(tracks, uncertainty_val = unc_data)
+  
+  return (def_unc) 
+}
+#
+#' @describeIn post_track depicts the points selected in either the
 #' environmental or geographical sampling over the uncertainty surface
 #' calculated during model selection. It allows to see whether the
 #' points occupy areas of high or low uncertainty.
 #' 
-# CODE post_track ---------
+# CODE post_track_unc ---------
 # Dependencies: none
-post_track = function(tracks, uncert_ras, plyg, col.use = NULL){
+post_track_unc = function(tracks, uncert_ras, plyg, col.use = NULL){
   if(is.null(col.use)){
     print("Please define 'col.use' using two colors")
   } else{
