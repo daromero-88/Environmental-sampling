@@ -9,7 +9,7 @@
 # Read R code ----------------
 # These three scripts contain the functions needed for the analyses
 source("E-space-functions.R")
-source("Hutchinson-functions.R")
+source("Hutchinson-function.R")
 source("Post-track-function.R")
 
 # Load packages -------------
