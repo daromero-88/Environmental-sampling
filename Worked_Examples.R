@@ -35,7 +35,7 @@ length(all_envs@layers)
 
 ldb = read.csv ('./env_samp_points/spp_ex1.csv')
 amr = readOGR ('./env_samp_points/shape_amrs/Americas.shp')
-
+amr = buffer(amr, width = 0.2, dissolve = T)
 
 #Read data for examples 1 and 2: MELIOIDOSIS SAMPLING--------------------
 
@@ -287,7 +287,7 @@ wrd_merra2 = crop (all_envs, amr)
 wrd_merra2 = mask (wrd_merra2, amr)
 
 #creating main dataframe displaying points in E
-rr = e_space(ldb[,3:4], wrd_merra2, pflag = T)
+rr = e_space(ldb[,2:3], wrd_merra2, pflag = T)
 
 #examining a stack of raster in E space 
 #new extent for example: 
@@ -303,9 +303,9 @@ rr2 = e_space_back(ldb[,3:4], ex_stck, wrd_merra2, pflag = T)
 
 #Hutchinson sampling: 
 #sampling scheme: 
-qq1 = hutchinson(EtoG = T, rr, c(3,4), amr, 2)
-qq2 = hutchinson(EtoG = T, rr, c(3,5), amr, 2)
-qq3 = hutchinson(EtoG = T, rr, c(4,5), amr, 2)
+qq1 = hutchinson(EtoG = T, na.omit(rr), c(3,4), amr, 2) #if NA, na.omit should be neccesary
+qq2 = hutchinson(EtoG = T, na.omit(rr), c(3,5), amr, 2) #try to avoid the presence of NA in the database
+qq3 = hutchinson(EtoG = T, na.omit(rr), c(4,5), amr, 2)
 
 #defining database with transects from different dimensions: 
 q_df = rbind (qq1, qq2, qq3)
