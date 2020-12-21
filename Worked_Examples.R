@@ -239,19 +239,19 @@ f3_tex1 = e_space_cat_back(stck = tex1_envs, ctgr = tex1_mods[[3]],
 # and use them as the 'calls' argument of this function
 names (f2_tex1) 
 # temperature & humidity
-tex1_tmp_hum = hutchinson(EtoG=T, data=f2_tex1, calls=c(6,4), plyg=tex1, ntr=3, col.use=col)
+tex1_tmp_hum = hutchinson_cat(EtoG=T, data=f2_tex1, calls=c(6,4), plyg=tex1, ntr=3, col.use=col)
 # temperature & soil
-tex1_tmp_soil = hutchinson(EtoG=T, data=f2_tex1, calls=c(6,5), plyg=tex1, ntr=3, col.use=col)
+tex1_tmp_soil = hutchinson_cat(EtoG=T, data=f2_tex1, calls=c(6,5), plyg=tex1, ntr=3, col.use=col)
 # humidity & soil
-tex1_hum_soil = hutchinson(EtoG=T, data=f2_tex1, calls=c(4,5), plyg=tex1, ntr=3, col.use=col)
+tex1_hum_soil = hutchinson_cat(EtoG=T, data=f2_tex1, calls=c(4,5), plyg=tex1, ntr=3, col.use=col)
 
 # Option 1: from G-space to E-space
 # temperature & humidity
-tex12_tmp_hum = hutchinson(EtoG=F, data=f2_tex1, calls=c(6,4), plyg=tex1, ntr=3, col.use=col)
+tex12_tmp_hum = hutchinson_cat(EtoG=F, data=f2_tex1, calls=c(6,4), plyg=tex1, ntr=3, col.use=col)
 # temperature & soil
-tex12_tmp_soil = hutchinson(EtoG=F, data=f2_tex1, calls=c(6,5), plyg=tex1, ntr=3, col.use=col)
+tex12_tmp_soil = hutchinson_cat(EtoG=F, data=f2_tex1, calls=c(6,5), plyg=tex1, ntr=3, col.use=col)
 # humidity & soil
-tex12_hum_soil = hutchinson(EtoG=F, data=f2_tex1, calls=c(4,5), plyg=tex1, ntr=3, col.use=col)
+tex12_hum_soil = hutchinson_cat(EtoG=F, data=f2_tex1, calls=c(4,5), plyg=tex1, ntr=3, col.use=col)
 
 # The sampling exercise has the goal of maximizing the selection of different suitability
 # categories with the selection of different transects in either E-space or G-space.
@@ -265,7 +265,7 @@ tex1_sampling = rbind(tex1_tmp_hum, tex1_tmp_soil, tex1_hum_soil)
 dim(tex1_sampling)
 
 # Select uncertainty layer and apply function
-uncer_check = post_track(tex1_sampling, tex1_unc[[3]], tex1, col.use=col)
+uncer_check = post_track_unc(tex1_sampling, tex1_unc[[3]], tex1, col.use=col)
 
 #' Because different environmental tracks were selected using different environmental 
 #' variables, some information might be repeated, however, the post_track function
