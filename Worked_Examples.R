@@ -154,17 +154,17 @@ cear2_hum_soil = hutchinson(EtoG=F, data=f2_cear, calls=c(4,5), plyg=cear, ntr=3
 # Therefore, once the transects are selected, a final step is needed to check the levels
 # of uncertainty in the selected sites:
 
-# FUNCTION 5: post_track()
+# FUNCTION 5: post_track_cat()
 
 # Combine the dataframes if your are willing to include more than two environmental variables
 cear_sampling = rbind(cear_tmp_hum, cear_tmp_soil, cear_hum_soil)
 dim(cear_sampling)
 
 # Select uncertainty layer and apply function
-uncer_check = post_track(cear_sampling, cear_unc[[3]], cear, col.use=col)
+uncer_check = post_track_cat(cear_sampling, cear_unc[[3]], cear, col.use=col)
 
 #' Because different environmental tracks were selected using different environmental 
-#' variables, some information might be repeated, however, the post_track function
+#' variables, some information might be repeated, however, the post_track_cat function
 #' eliminates duplicates
 dim(uncer_check)
 
@@ -259,17 +259,17 @@ tex12_hum_soil = hutchinson_cat(EtoG=F, data=f2_tex1, calls=c(4,5), plyg=tex1, n
 # Therefore, once the transects are selected, a final step is needed to check the levels
 # of uncertainty in the selected sites:
 
-# FUNCTION 5: post_track()
+# FUNCTION 5: post_track_cat()
 
 # Combine the dataframes if your are willing to include more than two environmental variables
 tex1_sampling = rbind(tex1_tmp_hum, tex1_tmp_soil, tex1_hum_soil)
 dim(tex1_sampling)
 
 # Select uncertainty layer and apply function
-uncer_check = post_track_unc(tex1_sampling, tex1_unc[[3]], tex1, col.use=col)
+uncer_check = post_track_cat(tex1_sampling, tex1_unc[[3]], tex1, col.use=col)
 
 #' Because different environmental tracks were selected using different environmental 
-#' variables, some information might be repeated, however, the post_track function
+#' variables, some information might be repeated, however, the post_track_cat function
 #' eliminates duplicates
 dim(uncer_check)
 
