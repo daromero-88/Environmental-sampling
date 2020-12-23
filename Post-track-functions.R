@@ -49,14 +49,14 @@ post_track = function(tracks, raster_file, plyg){
   return (def_unc) 
 }
 #
-#' @describeIn post_track depicts the points selected in either the
+#' @describeIn post_track_cat depicts the points selected in either the
 #' environmental or geographical sampling over the uncertainty surface
 #' calculated during model selection. It allows to see whether the
-#' points occupy areas of high or low uncertainty.
+#' points from different categories occupy areas of high or low uncertainty.
 #' 
-# CODE post_track_unc ---------
+# CODE post_track_cat ---------
 # Dependencies: none
-post_track_unc = function(tracks, uncert_ras, plyg, col.use = NULL){
+post_track_cat = function(tracks, uncert_ras, plyg, col.use = NULL){
   if(is.null(col.use)){
     print("Please define 'col.use' using two colors")
   } else{
