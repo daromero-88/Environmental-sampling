@@ -31,12 +31,6 @@ all_envs = stack(list.files('./environmental_variables', full.names = T))
 # number of layers
 length(all_envs@layers)
 
-#Read data for example 3: POINTS TO ENVIRONMENTAL SAMPLING----------------
-
-ldb = read.csv ('./env_samp_points/spp_ex1.csv')
-amr = readOGR ('./env_samp_points/shape_amrs/Americas.shp')
-amr = buffer(amr, width = 0.2, dissolve = T)
-
 #Read data for examples 1 and 2: MELIOIDOSIS SAMPLING--------------------
 
 #' categorized_models: models categorized using four thresholds as described in the main text
@@ -49,6 +43,13 @@ length(cat_models@layers)
 uncert_models = stack(list.files ('./uncertainty_models', full.names = T))
 # number of layers
 length(uncert_models@layers)
+
+#Read data for example 3: POINTS TO ENVIRONMENTS AND SAMPLING----------------
+
+ldb = read.csv ('./env_samp_points/spp_ex1.csv')
+amr = readOGR ('./env_samp_points/shape_amrs/Americas.shp')
+amr = buffer(amr, width = 0.2, dissolve = T)
+
 
 # WORKED EXAMPLE 1, FULLY COMMENTED: Ceara, Brazil ---------------------
 
@@ -134,7 +135,7 @@ f3_cear = e_space_cat_back(stck = cear_envs, ctgr = cear_mods[[3]],
 # and use them as the 'calls' argument of this function
 names (f2_cear) 
 # temperature & humidity
-cear_tmp_hum = hutchinson(EtoG=T, data=f2_cear, calls=c(6,4), plyg=cear, ntr=3, col.use=col)
+cear_tmp_hum = hutchinson(EtoG=T, data=f2_cear, calls=c(6,4), plyg=cear, ntr=3, col.use=col) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
 # temperature & soil
 cear_tmp_soil = hutchinson(EtoG=T, data=f2_cear, calls=c(6,5), plyg=cear, ntr=3, col.use=col)
 # humidity & soil
@@ -142,7 +143,7 @@ cear_hum_soil = hutchinson(EtoG=T, data=f2_cear, calls=c(4,5), plyg=cear, ntr=3,
 
 # Option 2: from G-space to E-space
 # temperature & humidity
-cear2_tmp_hum = hutchinson(EtoG=F, data=f2_cear, calls=c(6,4), plyg=cear, ntr=3, col.use=col)
+cear2_tmp_hum = hutchinson(EtoG=F, data=f2_cear, calls=c(6,4), plyg=cear, ntr=3, col.use=col) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
 # temperature & soil
 cear2_tmp_soil = hutchinson(EtoG=F, data=f2_cear, calls=c(6,5), plyg=cear, ntr=3, col.use=col)
 # humidity & soil
@@ -239,7 +240,7 @@ f3_tex1 = e_space_cat_back(stck = tex1_envs, ctgr = tex1_mods[[3]],
 # and use them as the 'calls' argument of this function
 names (f2_tex1) 
 # temperature & humidity
-tex1_tmp_hum = hutchinson_cat(EtoG=T, data=f2_tex1, calls=c(6,4), plyg=tex1, ntr=3, col.use=col)
+tex1_tmp_hum = hutchinson_cat(EtoG=T, data=f2_tex1, calls=c(6,4), plyg=tex1, ntr=3, col.use=col) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
 # temperature & soil
 tex1_tmp_soil = hutchinson_cat(EtoG=T, data=f2_tex1, calls=c(6,5), plyg=tex1, ntr=3, col.use=col)
 # humidity & soil
@@ -247,7 +248,7 @@ tex1_hum_soil = hutchinson_cat(EtoG=T, data=f2_tex1, calls=c(4,5), plyg=tex1, nt
 
 # Option 1: from G-space to E-space
 # temperature & humidity
-tex12_tmp_hum = hutchinson_cat(EtoG=F, data=f2_tex1, calls=c(6,4), plyg=tex1, ntr=3, col.use=col)
+tex12_tmp_hum = hutchinson_cat(EtoG=F, data=f2_tex1, calls=c(6,4), plyg=tex1, ntr=3, col.use=col) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
 # temperature & soil
 tex12_tmp_soil = hutchinson_cat(EtoG=F, data=f2_tex1, calls=c(6,5), plyg=tex1, ntr=3, col.use=col)
 # humidity & soil
@@ -279,35 +280,37 @@ write.csv(uncer_check, './tex1_res.csv', row.names = F)
 
 #WORKED EXAMPLE 3: points to environmental sampling ------------------
 
-#creatinng main for Hutchinson-based sampling: 
-#data available in the corresponding sections 
+#creatinng main data for Hutchinson-based sampling: 
 
 #environmental variables
 wrd_merra2 = crop (all_envs, amr)
 wrd_merra2 = mask (wrd_merra2, amr)
 
-#creating main dataframe displaying points in E
+#creating main dataframe: points to E and G space
+
 rr = e_space(ldb[,2:3], wrd_merra2, pflag = T)
 
 #examining a stack of raster in E space 
+
 #new extent for example: 
-ee = extent(-100, -50, -50, 100)
+ee = extent(-50, 50, -50, 50)
 
 ex_stck = crop (wrd_merra2, ee)
 
-rr1 = e_space(stck = ex_stck, pflag = T)
+rr1 = e_space(stck = ex_stck, pflag = T) #in the absence of coordinates, please define the raster as shown here: 'stck= ex_stck' 
 
-#examining points in E overlapped with a background
+#examining points in G space and in E overlapped with a background: 
+
 rr2 = e_space_back(ldb[,3:4], ex_stck, wrd_merra2, pflag = T)
 
 
-#Hutchinson sampling: 
+#Hutchinson sampling: From E to G, if G to E is needed, change EtoG argument to F
 #sampling scheme: 
-qq1 = hutchinson(EtoG = T, na.omit(rr), c(3,4), amr, 2) #if NA, na.omit should be neccesary
-qq2 = hutchinson(EtoG = T, na.omit(rr), c(3,5), amr, 2) #try to avoid the presence of NA in the database
+qq1 = hutchinson(EtoG = T, na.omit(rr), c(3,4), amr, 2) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
+qq2 = hutchinson(EtoG = T, na.omit(rr), c(3,5), amr, 2) 
 qq3 = hutchinson(EtoG = T, na.omit(rr), c(4,5), amr, 2)
 
-#defining database with transects from different dimensions: 
+#defining database with transects from different environmental dimensions: 
 q_df = rbind (qq1, qq2, qq3)
 dim(q_df)
 
