@@ -135,19 +135,19 @@ f3_cear = e_space_cat_back(stck = cear_envs, ctgr = cear_mods[[3]],
 # and use them as the 'calls' argument of this function
 names (f2_cear) 
 # temperature & humidity
-cear_tmp_hum = hutchinson(EtoG=T, data=f2_cear, calls=c(6,4), plyg=cear, ntr=3, col.use=col) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
+cear_tmp_hum = hutchinson_cat(EtoG=T, data=f2_cear, calls=c(6,4), plyg=cear, ntr=3, col.use=col) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
 # temperature & soil
-cear_tmp_soil = hutchinson(EtoG=T, data=f2_cear, calls=c(6,5), plyg=cear, ntr=3, col.use=col)
+cear_tmp_soil = hutchinson_cat(EtoG=T, data=f2_cear, calls=c(6,5), plyg=cear, ntr=3, col.use=col)
 # humidity & soil
-cear_hum_soil = hutchinson(EtoG=T, data=f2_cear, calls=c(4,5), plyg=cear, ntr=3, col.use=col)
+cear_hum_soil = hutchinson_cat(EtoG=T, data=f2_cear, calls=c(4,5), plyg=cear, ntr=3, col.use=col)
 
-# Option 2: from G-space to E-space
+# Option 2: from G-space to E-space ####CORRECTION####
 # temperature & humidity
-cear2_tmp_hum = hutchinson(EtoG=F, data=f2_cear, calls=c(6,4), plyg=cear, ntr=3, col.use=col) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
+cear2_tmp_hum = hutchinson_cat(EtoG=F, data=f2_cear, calls=c(6,4), plyg=cear, ntr=3, col.use=col) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
 # temperature & soil
-cear2_tmp_soil = hutchinson(EtoG=F, data=f2_cear, calls=c(6,5), plyg=cear, ntr=3, col.use=col)
+cear2_tmp_soil = hutchinson_cat(EtoG=F, data=f2_cear, calls=c(6,5), plyg=cear, ntr=3, col.use=col)
 # humidity & soil
-cear2_hum_soil = hutchinson(EtoG=F, data=f2_cear, calls=c(4,5), plyg=cear, ntr=3, col.use=col)
+cear2_hum_soil = hutchinson_cat(EtoG=F, data=f2_cear, calls=c(4,5), plyg=cear, ntr=3, col.use=col)
 
 # The sampling exercise has the goal of maximizing the selection of different suitability
 # categories with the selection of different transects in either E-space or G-space.
@@ -160,7 +160,7 @@ cear2_hum_soil = hutchinson(EtoG=F, data=f2_cear, calls=c(4,5), plyg=cear, ntr=3
 cear_sampling = rbind(cear_tmp_hum, cear_tmp_soil, cear_hum_soil)
 dim(cear_sampling)
 
-# Select uncertainty layer and apply function
+# Select uncertainty layer and apply function 
 uncer_check = post_track_cat(cear_sampling, cear_unc[[3]], cear, col.use=col)
 
 #' Because different environmental tracks were selected using different environmental 
@@ -295,24 +295,30 @@ rr = e_space(ldb[,2:3], wrd_merra2, pflag = T)
 #new extent for example: 
 ee = extent(-50, 50, -50, 50)
 
-ex_stck = crop (wrd_merra2, ee)
+ex_stck = crop (wrd_merra2, ee) #raster stack cropped with the created extent 
 
+#check the environmental space of the raster stack: 
 rr1 = e_space(stck = ex_stck, pflag = T) #in the absence of coordinates, please define the raster as shown here: 'stck= ex_stck' 
 
 #examining points in G space and in E overlapped with a background: 
+rr2 = e_space_back(ldb[,2:3], wrd_merra2, ex_stck, pflag = T)
 
-rr2 = e_space_back(ldb[,3:4], ex_stck, wrd_merra2, pflag = T)
 
-
-#Hutchinson sampling: From E to G, if G to E is needed, change EtoG argument to F
+#Hutchinson sampling: From E to G
 #sampling scheme: 
 qq1 = hutchinson(EtoG = T, na.omit(rr), c(3,4), amr, 2) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
 qq2 = hutchinson(EtoG = T, na.omit(rr), c(3,5), amr, 2) 
 qq3 = hutchinson(EtoG = T, na.omit(rr), c(4,5), amr, 2)
 
-#defining database with transects from different environmental dimensions: 
+#Hutchinson sampling: from G to E
+qq4 = hutchinson(EtoG = F, na.omit(rr), c(3,4), amr, 2) #if NA, na.omit will be neccesary, try to avoid the presence of NA in the database
+qq5 = hutchinson(EtoG = F, na.omit(rr), c(3,5), amr, 2) 
+qq6 = hutchinson(EtoG = F, na.omit(rr), c(4,5), amr, 2)
+
+#defining database with transects from different environmental dimensions (E to G): 
 q_df = rbind (qq1, qq2, qq3)
 dim(q_df)
+
 
 #trimming database for final coordinates and uncertainty/raster evaluation: 
 ss = post_track(q_df, wrd_merra2[[1]], amr)

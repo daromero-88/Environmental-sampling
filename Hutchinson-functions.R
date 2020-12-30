@@ -94,7 +94,7 @@ hutchinson = function (EtoG, data, calls, plyg, ntr){
       transects[[j]] = cbind(as.matrix(data[ss,]),rep(j,length(ss)))
     }
     all.tr = data.frame (do.call(rbind,transects))
-    
+    colnames(all.tr) <- c(colnames(data),"transects")
     # Plot 2: E-space
     dev.new()
     plot(all.tr[,calls[1]], all.tr[,calls[2]], cex = 0.8, main="E-space",
@@ -183,7 +183,7 @@ hutchinson_cat <- function(EtoG, data, calls, plyg, ntr, col.use = NULL){
         transects[[j]] = cbind(as.matrix(data[ss,]),rep(j,length(ss)))
       }
       all.tr = data.frame (do.call(rbind,transects))
-      
+      colnames(all.tr) <- c(colnames(data),"transects")
       # Plot 2: E-space
       dev.new()
       plot(all.tr[,calls[1]], all.tr[,calls[2]], cex = 0.8, main="E-space",
