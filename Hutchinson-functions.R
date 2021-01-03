@@ -155,6 +155,8 @@ hutchinson_cat <- function(EtoG, data, calls, plyg, ntr, col.use = NULL){
       return(all.tr)
     }
     if(EtoG==F){ # from G to E
+      # determine the number of categories
+      catnum = length(unique(data[,3]))
       # Convert geographic coordinates into a Spatial object
       data("wrld_simpl", package = "maptools")
       sp_ob = sp::SpatialPointsDataFrame(data[,calls], data, proj4string = crs(wrld_simpl))
@@ -187,7 +189,7 @@ hutchinson_cat <- function(EtoG, data, calls, plyg, ntr, col.use = NULL){
       # Plot 2: E-space
       dev.new()
       plot(all.tr[,calls[1]], all.tr[,calls[2]], cex = 0.8, main="E-space",
-           col = pal5(length(unique(all.tr[,3])))[all.tr[,3]], pch = 1+all.tr[,dim(all.tr)[2]],
+           col = pal5(catnum)[all.tr[,3]], pch = 1+all.tr[,dim(all.tr)[2]],
            xlab = paste ('Env_var1:', colnames(all.tr[calls[1]])), 
            ylab = paste ('Env_var2:', colnames(all.tr[calls[2]])))
       tr.names = paste ('Transect', 1:ntr)
