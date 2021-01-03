@@ -1,5 +1,5 @@
-# Functions 'post_track'
-### This function allows the cleaning of the dataframe constructed via the 'Hutchinson' function and overlap  
+# Functions 'post_track', 'post_track_cat'
+### These functions allows the cleaning of the dataframe constructed via the 'Hutchinson' or 'Hutchinson_cat' functions and overlap  
 ### the dataframe with a raster of the selection of the user. Here we overlap the points with the raster that 
 ### examplifies uncertainty of the final model outputs on this particular excercise. 
 
@@ -12,11 +12,13 @@
 #' @param col.use vector of lenght two with the colors to be used in plots
 #' 
 #' @return
-#' \code{post_track} returns a dataframe with coordinates, categories,
+#' \code{post_track} returns a dataframe with coordinates,
+#' environmental values per pixel, track number, raster values.
+#' \code{post_track_cat} returns a dataframe with coordinates, categories,
 #' environmental values per pixel, track number, uncertainty values.
 #' 
 #' @describeIn post_track depicts the points selected in either the
-#' environmental or geographical sampling overa raster surface.
+#' environmental or geographical sampling over a raster surface.
 #' It allows trims the dataset for duplicates and allows to see whether the
 #' points occupy areas of interest in any raster file. 
 #' 
@@ -29,9 +31,9 @@ post_track = function(tracks, raster_file, plyg){
   tracks = tracks[!duplicated(tracks$dup),]
   tracks$dup = NULL
   
-  # plotting points on top of the uncertainty map 
+  # plotting points on top of the raster map 
   dev.new()
-  # plot uncertainty raster and shapefile with region of interest
+  # plot  raster and shapefile with region of interest
   plot (raster_file, main = 'Raster values', xlab = 'Latitude', ylab = 'Longitude')
   plot (plyg, add = T)
   # add points 1: 
@@ -52,7 +54,8 @@ post_track = function(tracks, raster_file, plyg){
 #' @describeIn post_track_cat depicts the points selected in either the
 #' environmental or geographical sampling over the uncertainty surface
 #' calculated during model selection. It allows to see whether the
-#' points from different categories occupy areas of high or low uncertainty.
+#' points from different suitability categories occupy areas 
+#' of high or low uncertainty.
 #' 
 # CODE post_track_cat ---------
 # Dependencies: none

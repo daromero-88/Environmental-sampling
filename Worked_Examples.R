@@ -286,18 +286,25 @@ rr = e_space(ldb[,2:3], wrd_merra2, pflag = T)
 
 #examining only a stack of raster in E and G space 
 
-#new extent for example: 
+#new extent for examples: 
 ee = extent(-50, 50, -50, 50)
+ee2 = extent (-60, -30, -70,-10)
 
-ex_stck = crop (wrd_merra2, ee) #raster stack cropped with the created extent 
+#raster stack cropped with the created extent 
+ex_stck = crop (wrd_merra2, ee) 
+ex_stck2 = crop (wrd_merra2, ee2)
 
 #check the environmental space of the raster stack: 
 rr1 = e_space(stck = ex_stck, pflag = T) #in the absence of coordinates, please define the raster as shown here: 'stck= ex_stck' 
 
 #examining points in G space and in E overlapped with a background:
-#here we are plotting the points with values of the americas (wrd_merra2) in a selected backtround (ex_stck, the extent cropped above)
+#here we are plotting the points with values of the americas (wrd_merra2) in a selected background (ex_stck, the extent cropped above)
 rr2 = e_space_back(ldb[,2:3], wrd_merra2, ex_stck, pflag = T)
 
+#In the absence of points, we can compare one stack, against other 
+#here we are plotting one stack (ex_stack2) with a background (ex_stack) 
+#without points, directly using the raster stacks. Notice that you have to define each argument as in the example. 
+rr3 = e_space_back(stck= ex_stck2, bck = ex_stck, pflag = T)
 
 #Hutchinson sampling: From E to G
 #sampling scheme: 

@@ -1,5 +1,5 @@
 # Function 'hutchinson', 'hutchinson_cat'
-### This functions works in combination with the 'e_space' and 'e_space_cat' function available in the E_space_functions script
+### These functions work in combination with the 'e_space' and 'e_space_cat' functions available in the E_space_functions script
 ### It allows the user to create transects in any environmental space and transfer them to the geographic space 
 ### or viceversa. It can be used to further explore and select areas on the environmental dimensions used to calibrate  
 ### the model or other environmental dimensions representing knowledge of the species niche. 
@@ -9,7 +9,7 @@
 #'   transects are drawn in G-space. If FALSE, G-space is plotted first.
 #' @param data dataframe with the following columns: longitude, latitude, 
 #' and environmental variables (one per column) for 'hutchinson' as it is obtained with 
-#' 'e_space' function or a dataframe with longitude, latitude, suitability category (from a thresholded raster)
+#' 'e_space' function, or a dataframe with longitude, latitude, suitability category (from a thresholded raster)
 #' and environmental variables as columns (one per column) for 'hutchinson_cat',
 #' as it is obtained from applying the function 'e_space_cat'
 #' @param calls vector of length two that indicates the columns that contain the
@@ -19,28 +19,26 @@
 #' @param col.use vector of lenght two with the colors to be used in plots
 #' 
 #' @return
-#' \code{hutchinson} returns a database with coordinates, values, categories,
+#' \code {hutchinso} returns a database with coordinates, values, 
+#' and the selected tracks
+#' \code{hutchinson_cat} returns a database with coordinates, values, categories,
 #' and the selected tracks.
 #' 
 #' @describeIn hutchinson plots the E-space/G-space and allows the user
 #' to select transects that are then represented in the G-space/E-space.
 #' 
 # CODE hutchinson -----------
-# Dependencies: maptools, sp, gatepoints
+# Dependencies: maptools, raster, rgdal, sp, gatepoints
 
 hutchinson = function (EtoG, data, calls, plyg, ntr){
   # create object to save information about the transects created
   transects <- vector("list",length=ntr)
   if(EtoG==T){ # from E to G
-    # determine the number of categories
-    #catnum = length(unique(data[,3]))
     # Plot 1: E-space
     dev.new()
     plot(data[,calls], col = 'grey', main="E-space", pch = 3,
          cex = 0.5, xlab = colnames(data[calls[1]]), ylab = colnames(data[calls[2]]))
-    #suit_class = paste("Suitability value",unique(data[,3]))
-    #legend('topleft', legend = suit_class, pch = 1+unique(data[,3]), cex = 0.7, col = pal5(catnum))
-    # user defines transects
+        # user defines transects
     for(j in 1:ntr){
       if(j == 1){
         print("Instructions:")
@@ -78,9 +76,6 @@ hutchinson = function (EtoG, data, calls, plyg, ntr){
          col = 'grey', cex = 0.8)
     # add region limits
     plot (plyg, add = T)
-    #suit_class = paste("Suitability value",unique(sp_ob@data[,3]))
-    #legend('bottomleft', legend=suit_class, pch = 1+ unique(sp_ob@data[,3]),
-    #      col= pal5(length(unique(sp_ob@data[,3]))), cex=0.7)
     for(j in 1:ntr){
       if(j == 1){
         print("Instructions:")
@@ -111,7 +106,7 @@ hutchinson = function (EtoG, data, calls, plyg, ntr){
 #' and allows the user to select transects that are then represented in the G-space/E-space.
 #' 
 # CODE hutchinson_cat ---------
-# Dependencies: maptools, sp, gatepoints
+# Dependencies: maptools, sp, raster, rgdal, gatepoints
 hutchinson_cat <- function(EtoG, data, calls, plyg, ntr, col.use = NULL){
   if(is.null(col.use)){
     print("Please define 'col.use' using two colors")

@@ -1,7 +1,7 @@
 # Functions 'e_space', 'e_space_back', 'e_space_cat' and 'e_space_cat_back'
-### These three functions allow the user explore the environmental space of a particular region (e_space) and 
+### These four functions allow the user to explore the environmental space of a particular region (e_space) and 
 ### the environmental space divided in different suitable categories as determined by the model outpus (e_space_cat).
-### The last function allows the comparison of a particular environment to a background of the same area depicting
+### The 'back' function allows the comparison of a particular environment to a background of the same area depicting
 ### unsuitable environmnents or different environemntal regions. 
 
 #
@@ -19,11 +19,11 @@
 #' 
 #' @return
 #' \code{e_space} returns a dataframe with the extracted environmental values
-#' that can be used for other kinds of visualizations.
+#' that can be used for other kinds of visualizations and the application of the Hutchinson function.
 #' \code {e_space_bck} returns a dataframe with a new column indicating the study area
 #' (>1) and the background (=1)
 #' \code{e_space_cat} returns a dataframe necessary for applying the environmental
-#' sampling (Hutchinson) functions.
+#' sampling (Hutchinson_cat) function.
 #' \code{e_space_cat_back} returns a dataframe that includes the background
 #' as a new category. 
 #' 
@@ -31,13 +31,13 @@
 #' raster stack of environmental variables into
 #' a dataframe that contains the geographic coordinates and environmental values
 #' as extracted from the raster file; it also displays the points into E-space and
-#' G-space.
+#' G-space. If only stacks are used, please define the argument as 'stck = '.
 # CODE e_space ---------
-# Dependencies: maptools, wrld_simpl, raster
+# Dependencies: maptools, wrld_simpl, raster, rgdal, sp
 #
 e_space <- function(pts, stck, pflag = F, wrld_map = wrld_simpl){
   if (missing(pts)){
-    # transform raster into referenced points and into a data frame
+    # transform points or rasters into referenced points and into a data frame
     pts1 = data.frame(rasterToPoints(stck, fun = NULL))
   }else{
     pts1 = cbind (pts, extract (stck,pts[,1:2]))
@@ -64,12 +64,13 @@ e_space <- function(pts, stck, pflag = F, wrld_map = wrld_simpl){
 #' a dataframe that contains the geographic coordinates and environmental values
 #' as extracted from the raster file; it also displays the points into G space and in 
 #' E-space overlapped with a selected background. 
+#' If only stacks are used, please define the argument as 'stck = '.
 # CODE e_space_back ---------
-# Dependencies: maptools, wrld_simpl, raster
+# Dependencies: maptools, wrld_simpl, raster, rgdal, sp
 
 e_space_back <- function(pts, stck, bck, pflag = F, wrld_map = wrld_simpl){
   if (missing(pts)){
-    # transform raster into referenced points and into a data frame
+    # transform points or rasters into referenced points and into a data frame
     pts1 = data.frame(rasterToPoints(stck, fun = NULL))
     bck = data.frame(rasterToPoints(bck, fun = NULL))
   }else{
@@ -111,7 +112,7 @@ e_space_back <- function(pts, stck, bck, pflag = F, wrld_map = wrld_simpl){
 #' the suitability value of each spatial point as indicated in the ctgr file;
 #' it also displays the points into E-space and G-space.
 # CODE e_space_cat ---------
-# Dependencies: maptools, wrld_simpl, raster, plyr
+# Dependencies: maptools, wrld_simpl, raster, plyr, rgdal, sp
 #
 e_space_cat <- function(stck, ctgr, pflag = F, col.use = NULL, wrld_map = wrld_simpl){
   # Create full dataframe of coordinates and climatic values divided by categories
@@ -166,7 +167,7 @@ e_space_cat <- function(stck, ctgr, pflag = F, col.use = NULL, wrld_map = wrld_s
 #' environments are used, it depicts how different environemnts of the models
 #' are in comparison to the selected background.
 # CODE e_space_cat_back ---------
-# Dependencies: maptools, wrld_simpl, raster, plyr, e_space_cat
+# Dependencies: maptools, wrld_simpl, raster, plyr, e_space_cat, rgdal, sp
 #
 e_space_cat_back = function(stck, ctgr, bck, pflag = F, col.use = NULL, wrld_map = wrld_simpl){
   # Create full dataframe of coordinates and climatic values divided by categories
